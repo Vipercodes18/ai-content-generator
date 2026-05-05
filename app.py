@@ -67,7 +67,7 @@ if st.session_state.generate:
             output = response.choices[0].message.content
 
             st.markdown("---")
-            st.success("Content Generated Successfully ✅")
+            st.success()
             st.toast("Content ready 🚀")
 
             data = None  # 👈 IMPORTANT
