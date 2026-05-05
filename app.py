@@ -16,12 +16,13 @@ st.title("🚀 AI Content Generator")
 
 user_input = st.text_input("Enter your topic:")
 
+platform = st.selectbox("Select Platform", ["Instagram", "LinkedIn", "Twitter"])
 tone = st.selectbox("Select Tone", ["Motivational", "Funny", "Serious"])
 
 if st.button("Generate"):
     if user_input:
         prompt = f"""
-        Generate an Instagram post for the topic: {user_input}
+        Generate a {platform} post for the topic: {user_input}
         for the tone: {tone}
 
         Strict rules:
@@ -57,6 +58,7 @@ if st.button("Generate"):
 
             st.markdown("---")
             st.success("Content Generated Successfully ✅")
+            st.toast("Content ready 🚀")
 
             data = None  # 👈 IMPORTANT
 
@@ -70,14 +72,14 @@ if st.button("Generate"):
                 else:
                     raise ValueError("No JSON found")
 
-                st.subheader("📌 Title")
-                st.write(data["title"])
+                st.markdown("### 📌 Title")
+                st.info(data["title"])
 
-                st.subheader("🔥 Hook")
-                st.write(data["hook"])
+                st.markdown("### 🔥 Hook")
+                st.warning(data["hook"])
 
-                st.subheader("📝 Caption")
-                st.write(data["caption"])
+                st.markdown("### 📝 Caption")
+                st.success(data["caption"])
 
             except:
                 st.error("Invalid JSON output")
@@ -90,4 +92,5 @@ if st.button("Generate"):
     else:
         st.warning("Please enter a topic")
 
-st.caption("Built by Abhishek 🚀")
+st.markdown("---")
+st.caption("🚀 Built by Abhishek | AI Content Generator")
