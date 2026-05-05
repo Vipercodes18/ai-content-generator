@@ -19,11 +19,16 @@ user_input = st.text_input("Enter your topic:")
 platform = st.selectbox("Select Platform", ["Instagram", "LinkedIn", "Twitter"])
 tone = st.selectbox("Select Tone", ["Motivational", "Funny", "Serious"])
 
+if "generate" not in st.session_state:
+    st.session_state.generate = False
+
 if st.button("Generate"):
+    st.session_state.generate = True
+
+if st.session_state.generate:
     if user_input:
         prompt = f"""
         Generate a {platform} post for the topic: {user_input}
-        for the tone: {tone}
 
         Strict rules:
         - Return ONLY valid JSON
@@ -33,16 +38,21 @@ if st.button("Generate"):
         - If output is not valid JSON, regenerate it correctly
 
         Guidelines:
-        - Title: short and relevant
-        - Hook: catchy and engaging (NOT hashtags)
-        - Caption: simple, natural English
-        - Include hashtags ONLY inside caption (at the end)
+        - The tone MUST strictly be {tone}
+        - Adapt style based on platform:
+        - Instagram: engaging, short, hashtags
+        - LinkedIn: professional, insightful
+        - Twitter: short and punchy
+        - Title: short
+        - Hook: catchy
+        - Caption: 2–4 lines, simple English
+        - Include hashtags ONLY inside caption
 
         Output format:
         {{
-          "title": "...",
-          "hook": "...",
-          "caption": "..."
+        "title": "...",
+        "hook": "...",
+        "caption": "..."
         }}
         """
         with st.spinner("Generating content..."):
@@ -64,7 +74,7 @@ if st.button("Generate"):
 
             try:
                 # 👇 JSON extract karega even if extra text ho
-                json_match = re.search(r'\{.*\}', output, re.DOTALL)
+                json_match = re.search(r'\{[\s\S]*?\}', output)
                 
                 if json_match:
                     clean_json = json_match.group()
@@ -81,7 +91,7 @@ if st.button("Generate"):
                 st.markdown("### 📝 Caption")
                 st.success(data["caption"])
 
-            except:
+            except Exception as e:
                 st.error("Invalid JSON output")
                 st.code(output)
 
@@ -89,8 +99,12 @@ if st.button("Generate"):
             if data:
                 st.code(data["caption"], language="text")
 
-    else:
-        st.warning("Please enter a topic")
+                if st.button("🔄 Regenerate"):
+                    st.session_state.generate = True
+                    st.rerun()
+
+    if not user_input:
+        st.info("Enter a topic to generate content")
 
 st.markdown("---")
 st.caption("🚀 Built by Abhishek | AI Content Generator")
